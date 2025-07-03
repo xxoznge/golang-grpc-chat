@@ -38,7 +38,7 @@ pipeline {
             steps {
                 echo "Docker 이미지 ECR에 푸시"
                 script {
-                    docker.withRegistry("https://${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com", 'ecr:aws-credentials') {
+                    docker.withRegistry("https://${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com", '2641efca-548e-4dc1-b814-ef690f7254fa') {
                         dockerImage.push()
                     }
                 }
