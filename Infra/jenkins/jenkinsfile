@@ -16,7 +16,7 @@ pipeline {
                     branches: [[name: '*/main']],
                     userRemoteConfigs: [[
                         url: 'https://github.com/xxoznge/golang-grpc-chat.git',
-                        credentialsId: 'github-pat'  // GitHub PAT 크리덴셜 ID로 변경
+                        credentialsId: 'github-pat' 
                     ]]
                 ])
             }
