@@ -1,0 +1,10 @@
+# Infra/alb/values.yaml
+
+clusterName: grpc-chat-cluster-v1-0
+region: ap-northeast-2
+vpcId: vpc-09d73ad6dc8bbc55e
+serviceAccount:
+  create: false
+  name: aws-load-balancer-controller
+image:
+  tag: v2.7.1

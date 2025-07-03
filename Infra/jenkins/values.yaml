@@ -1,0 +1,26 @@
+controller:
+  persistence:
+    enabled: true
+    size: 20Gi
+    storageClass: gp2
+  serviceType: LoadBalancer
+  serviceAnnotations:
+    service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
+    service.beta.kubernetes.io/aws-load-balancer-type: external
+  ingress:
+    enabled: false
+  resources:
+    requests:
+      cpu: "500m"
+      memory: "1Gi"
+    limits:
+      cpu: "2"
+      memory: "4Gi"
+  nodeSelector:  
+    role: jenkins
+  tolerations: []
+
+persistence:
+  enabled: true
+  storageClass: gp2
+  size: 20Gi
