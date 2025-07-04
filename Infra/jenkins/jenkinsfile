@@ -1,27 +1,9 @@
 pipeline {
-  agent {
-    kubernetes {
-      label 'default'
-      defaultContainer 'jnlp'
-      yaml """
-apiVersion: v1
-kind: Pod
-spec:
-  containers:
-    - name: jnlp
-      image: 935875533840.dkr.ecr.ap-northeast-2.amazonaws.com/jenkins-agent-with-docker:latest
-      imagePullPolicy: Always
-      tty: true
-  imagePullSecrets:
-    - name: ecr-secret
-"""
-    }
-  }
+  agent any
 
   environment {
-    AWS_REGION = 'ap-northeast-2'
-    AWS_ACCOUNT_ID = '935875533840'
-    ECR_BASE = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+    EC2_HOST = "ec2-user@15.164.240.40"
+    SSH_KEY_ID = "ec2-ssh-key" 
   }
 
   stages {
@@ -38,60 +20,13 @@ spec:
       }
     }
 
-    stage('Login to AWS ECR') {
+    stage('Trigger EC2 Docker Build') {
       steps {
-        echo "ECR 로그인 (세션 토큰 포함)"
-        withCredentials([
-          string(credentialsId: 'aws-access-key-id', variable: 'AWS_ACCESS_KEY_ID'),
-          string(credentialsId: 'aws-secret-access-key', variable: 'AWS_SECRET_ACCESS_KEY'),
-          string(credentialsId: 'aws-session-token', variable: 'AWS_SESSION_TOKEN')
-        ]) {
+        echo "EC2에 SSH 접속하여 build_and_push.sh 실행"
+        sshagent(credentials: [SSH_KEY_ID]) {
           sh """
-            aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
-            aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
-            aws configure set aws_session_token $AWS_SESSION_TOKEN
-            aws configure set default.region ${AWS_REGION}
-            aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_BASE}
+            ssh -o StrictHostKeyChecking=no ${EC2_HOST} '~/build_and_push.sh ${BUILD_NUMBER}'
           """
-        }
-      }
-    }
-
-    stage('Build & Push grpc-chat-server') {
-      steps {
-        echo "grpc-chat-server Build & Push"
-        dir('.') {
-          script {
-            def imageName = "${ECR_BASE}/grpc-chat-server:${env.BUILD_NUMBER}"
-            sh "docker build -t ${imageName} ."
-            sh "docker push ${imageName}"
-          }
-        }
-      }
-    }
-
-    stage('Build & Push web-chat') {
-      steps {
-        echo "web-chat Build & Push"
-        dir('web-chat') {
-          script {
-            def imageName = "${ECR_BASE}/web-chat:${env.BUILD_NUMBER}"
-            sh "docker build -t ${imageName} ."
-            sh "docker push ${imageName}"
-          }
-        }
-      }
-    }
-
-    stage('Build & Push ws-proxy') {
-      steps {
-        echo "ws-proxy Build & Push"
-        dir('ws-proxy') {
-          script {
-            def imageName = "${ECR_BASE}/ws-proxy:${env.BUILD_NUMBER}"
-            sh "docker build -t ${imageName} ."
-            sh "docker push ${imageName}"
-          }
         }
       }
     }
@@ -99,10 +34,10 @@ spec:
 
   post {
     success {
-      echo '이미지 ECR Push 완료'
+      echo 'EC2에서 Docker 이미지 빌드 및 ECR 푸시 성공'
     }
     failure {
-      echo '이미지 ECR Push 실패'
+      echo 'EC2 빌드 실패 또는 SSH 접속 실패'
     }
   }
 }
