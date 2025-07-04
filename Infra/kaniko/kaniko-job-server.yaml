@@ -1,0 +1,29 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: kaniko-job-server
+  namespace: default
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      serviceAccountName: ecr-push-sa
+      restartPolicy: Never
+      containers:
+        - name: kaniko
+          image: gcr.io/kaniko-project/executor:latest
+          args:
+            - --dockerfile=server/Dockerfile
+            - --context=git://github.com/xxoznge/golang-grpc-chat.git#main
+            - --destination=935875533840.dkr.ecr.ap-northeast-2.amazonaws.com/grpc-chat-server:latest
+            - --destination=935875533840.dkr.ecr.ap-northeast-2.amazonaws.com/grpc-chat-server:${BUILD_NUMBER}
+            - --skip-tls-verify
+            - --snapshotMode=redo
+            - --cache=true
+          volumeMounts:
+            - name: kaniko-secret
+              mountPath: /kaniko/.docker
+      volumes:
+        - name: kaniko-secret
+          secret:
+            secretName: ecr-docker-config

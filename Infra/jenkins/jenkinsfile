@@ -2,14 +2,17 @@ pipeline {
   agent any
 
   environment {
-    EC2_HOST = "ec2-user@15.164.240.40"
-    SSH_KEY_ID = "ec2-ssh-key" 
+    JOBS = [
+      [name: "kaniko-job-server", path: "Infra/kaniko/kaniko-job-server.yaml"],
+      [name: "kaniko-job-web", path: "Infra/kaniko/kaniko-job-web.yaml"],
+      [name: "kaniko-job-ws", path: "Infra/kaniko/kaniko-job-ws.yaml"]
+    ]
   }
 
   stages {
     stage('Checkout') {
       steps {
-        echo "Git에서 소스코드 체크아웃"
+        echo "[단계] Git에서 소스코드 체크아웃"
         checkout([$class: 'GitSCM',
           branches: [[name: '*/main']],
           userRemoteConfigs: [[
@@ -20,13 +23,22 @@ pipeline {
       }
     }
 
-    stage('Trigger EC2 Docker Build') {
+    stage('Run Kaniko Jobs') {
       steps {
-        echo "EC2에 SSH 접속하여 build_and_push.sh 실행"
-        sshagent(credentials: [SSH_KEY_ID]) {
-          sh """
-            ssh -o StrictHostKeyChecking=no ${EC2_HOST} '~/build_and_push.sh ${BUILD_NUMBER}'
-          """
+        script {
+          for (job in JOBS) {
+            echo "[단계] ${job.name} Job 실행 중"
+            sh "kubectl delete job ${job.name} --ignore-not-found"
+            sh "kubectl apply -f ${job.path}"
+            sh """
+              echo "[대기] ${job.name} Job 완료까지 대기 중..."
+              kubectl wait --for=condition=complete --timeout=300s job/${job.name} || (
+                echo '[오류] ${job.name} 실패. 로그 출력:' && \
+                kubectl logs job/${job.name} && \
+                exit 1
+              )
+            """
+          }
         }
       }
     }
@@ -34,11 +46,10 @@ pipeline {
 
   post {
     success {
-      echo 'EC2에서 Docker 이미지 빌드 및 ECR 푸시 성공'
+      echo '[성공] 모든 Kaniko Job 완료'
     }
     failure {
-      echo 'EC2 빌드 실패 또는 SSH 접속 실패'
+      echo '[실패] 일부 Kaniko Job 실패'
     }
   }
 }
-
