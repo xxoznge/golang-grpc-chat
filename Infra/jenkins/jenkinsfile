@@ -1,63 +1,84 @@
 pipeline {
-    agent any
+  agent {
+    kubernetes {
+      label 'docker-ecr-agent'
+      defaultContainer 'jnlp'
+    }
+  }
 
-    environment {
-        AWS_REGION = 'ap-northeast-2'
-        AWS_ACCOUNT_ID = '935875533840'
-        ECR_REPOSITORY = 'grpc-chat-server'
-        IMAGE_TAG = "${env.BUILD_NUMBER}"
+  environment {
+    AWS_REGION = 'ap-northeast-2'
+    AWS_ACCOUNT_ID = '935875533840'
+    ECR_BASE = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+  }
+
+  stages {
+    stage('Checkout') {
+      steps {
+        echo "Git에서 소스코드 체크아웃"
+        checkout([$class: 'GitSCM',
+          branches: [[name: '*/main']],
+          userRemoteConfigs: [[
+            url: 'https://github.com/xxoznge/golang-grpc-chat.git',
+            credentialsId: 'github-pat'
+          ]]
+        ])
+      }
     }
 
-    stages {
-        stage('Checkout') {
-            steps {
-                echo "Git에서 소스코드 체크아웃"
-                checkout([$class: 'GitSCM',
-                    branches: [[name: '*/main']],
-                    userRemoteConfigs: [[
-                        url: 'https://github.com/xxoznge/golang-grpc-chat.git',
-                        credentialsId: 'github-pat'
-                    ]]
-                ])
-            }
-        }
-
-        stage('Build Docker Image') {
-            steps {
-                echo "Docker 이미지 빌드 시작"
-                script {
-                    dockerImage = docker.build("${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPOSITORY}:${IMAGE_TAG}")
-                }
-            }
-        }
-
-        stage('Login to AWS ECR') {
-            steps {
-                echo "ECR 로그인"
-                script {
-                    sh "aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
-                }
-            }
-        }
-
-        stage('Push Docker Image') {
-            steps {
-                echo "Docker 이미지 ECR에 푸시"
-                script {
-                    docker.withRegistry("https://${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com", '2641efca-548e-4dc1-b814-ef690f7254fa') {
-                        dockerImage.push()
-                    }
-                }
-            }
-        }
+    stage('Login to AWS ECR') {
+      steps {
+        echo "ECR 로그인"
+        sh "aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_BASE}"
+      }
     }
 
-    post {
-        success {
-            echo '빌드 성공 - 이미지 ECR에 푸시 완료!'
+    stage('Build & Push grpc-chat-server') {
+      steps {
+        echo "grpc-chat-server Build & Push"
+        dir('.') {
+          script {
+            def imageName = "${ECR_BASE}/grpc-chat-server:${env.BUILD_NUMBER}"
+            sh "docker build -t ${imageName} ."
+            sh "docker push ${imageName}"
+          }
         }
-        failure {
-            echo '빌드 실패!'
-        }
+      }
     }
+
+    stage('Build & Push web-chat') {
+      steps {
+        echo "web-chat Build & Push"
+        dir('web-chat') {
+          script {
+            def imageName = "${ECR_BASE}/web-chat:${env.BUILD_NUMBER}"
+            sh "docker build -t ${imageName} ."
+            sh "docker push ${imageName}"
+          }
+        }
+      }
+    }
+
+    stage('Build & Push ws-proxy') {
+      steps {
+        echo "ws-proxy Build & Push"
+        dir('ws-proxy') {
+          script {
+            def imageName = "${ECR_BASE}/ws-proxy:${env.BUILD_NUMBER}"
+            sh "docker build -t ${imageName} ."
+            sh "docker push ${imageName}"
+          }
+        }
+      }
+    }
+  }
+
+  post {
+    success {
+      echo '이미지 ECR Push 완료'
+    }
+    failure {
+      echo '이미지 ECR Push 실패'
+    }
+  }
 }
