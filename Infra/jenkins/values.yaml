@@ -1,4 +1,6 @@
 controller:
+  admin:
+      existingSecret: jenkins
   persistence:
     enabled: true
     size: 20Gi
