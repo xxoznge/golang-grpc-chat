@@ -7,6 +7,9 @@ controller:
   serviceAnnotations:
     service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
     service.beta.kubernetes.io/aws-load-balancer-type: external
+  serviceAccount:
+    create: true
+    name: jenkins
   ingress:
     enabled: false
   resources:
