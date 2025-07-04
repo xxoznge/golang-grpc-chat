@@ -1,6 +1,6 @@
 controller:
   admin:
-      existingSecret: jenkins
+    existingSecret: jenkins
   persistence:
     enabled: true
     size: 20Gi
@@ -21,9 +21,13 @@ controller:
     limits:
       cpu: "2"
       memory: "4Gi"
-  nodeSelector:  
+  nodeSelector:
     role: jenkins
-  tolerations: []
+  agent:
+    customJenkinsLabels: jenkins-agent
+    image: 935875533840.dkr.ecr.ap-northeast-2.amazonaws.com/jenkins-agent-with-kubectl
+    tag: latest
+    alwaysPullImage: true
 
 persistence:
   enabled: true

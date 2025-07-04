@@ -1,9 +1,3 @@
-def JOBS = [
-  [name: "kaniko-job-server", path: "Infra/kaniko/kaniko-job-server.yaml"],
-  [name: "kaniko-job-web", path: "Infra/kaniko/kaniko-job-web.yaml"],
-  [name: "kaniko-job-ws", path: "Infra/kaniko/kaniko-job-ws.yaml"]
-]
-
 pipeline {
   agent any
 
@@ -24,7 +18,13 @@ pipeline {
     stage('Run Kaniko Jobs') {
       steps {
         script {
-          for (job in JOBS) {
+          def jobs = [
+            [name: "kaniko-job-server", path: "Infra/kaniko/kaniko-job-server.yaml"],
+            [name: "kaniko-job-web", path: "Infra/kaniko/kaniko-job-web.yaml"],
+            [name: "kaniko-job-ws", path: "Infra/kaniko/kaniko-job-ws.yaml"]
+          ]
+
+          for (job in jobs) {
             echo "[단계] ${job.name} 실행 중"
             sh "kubectl delete job ${job.name} --ignore-not-found"
             sh "kubectl apply -f ${job.path}"
