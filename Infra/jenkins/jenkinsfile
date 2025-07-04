@@ -11,8 +11,6 @@ spec:
     - name: jnlp
       image: 935875533840.dkr.ecr.ap-northeast-2.amazonaws.com/jenkins-agent-with-docker:latest
       imagePullPolicy: Always
-      command:
-        - ""
       tty: true
   imagePullSecrets:
     - name: ecr-secret
