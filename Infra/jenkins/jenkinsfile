@@ -1,8 +1,22 @@
 pipeline {
   agent {
     kubernetes {
-      label 'default' 
+      label 'default'
       defaultContainer 'jnlp'
+      yaml """
+apiVersion: v1
+kind: Pod
+spec:
+  containers:
+    - name: jnlp
+      image: 935875533840.dkr.ecr.ap-northeast-2.amazonaws.com/jenkins-agent-with-docker:latest
+      imagePullPolicy: Always
+      command:
+        - ""
+      tty: true
+  imagePullSecrets:
+    - name: ecr-secret
+"""
     }
   }
 
@@ -29,7 +43,6 @@ pipeline {
     stage('Login to AWS ECR') {
       steps {
         echo "ECR 로그인"
-        // Jenkins Credential에서 불러와 환경변수에 할당 후 로그인
         withCredentials([usernamePassword(credentialsId: 'aws-key', usernameVariable: 'AWS_ACCESS_KEY_ID', passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
           sh """
             aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
