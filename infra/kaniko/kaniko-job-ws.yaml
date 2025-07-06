@@ -8,35 +8,49 @@ metadata:
 spec:
   template:
     spec:
+      initContainers:
+        - name: git-clone
+          image: alpine/git
+          command: ["sh", "-c"]
+          args:
+            - git clone https://$(GITHUB_TOKEN)@github.com/xxoznge/golang-grpc-chat.git /workspace
+          env:
+            - name: GITHUB_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: github-token
+                  key: token
+          volumeMounts:
+            - name: workspace-volume
+              mountPath: /workspace
       containers:
-      - name: kaniko
-        image: gcr.io/kaniko-project/executor:latest
-        args:
-          - --dockerfile=/workspace/ws-proxy/Dockerfile
-          - --context=dir:///workspace
-          - --destination=935875533840.dkr.ecr.ap-northeast-2.amazonaws.com/ws-proxy:latest
-          - --cache=true
-        volumeMounts:
-          - name: workspace-volume
-            mountPath: /workspace
-        env:
-          - name: AWS_ACCESS_KEY_ID
-            valueFrom:
-              secretKeyRef:
-                name: aws-credentials
-                key: aws_access_key_id
-          - name: AWS_SECRET_ACCESS_KEY
-            valueFrom:
-              secretKeyRef:
-                name: aws-credentials
-                key: aws_secret_access_key
-          - name: AWS_SESSION_TOKEN
-            valueFrom:
-              secretKeyRef:
-                name: aws-credentials
-                key: aws_session_token
+        - name: kaniko
+          image: gcr.io/kaniko-project/executor:latest
+          args:
+            - --context=dir:///workspace/ws-proxy
+            - --dockerfile=Dockerfile
+            - --destination=935875533840.dkr.ecr.ap-northeast-2.amazonaws.com/ws-proxy:latest
+            - --cache=true
+          volumeMounts:
+            - name: workspace-volume
+              mountPath: /workspace
+          env:
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: aws-credentials
+                  key: aws_access_key_id
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: aws-credentials
+                  key: aws_secret_access_key
+            - name: AWS_SESSION_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: aws-credentials
+                  key: aws_session_token
       restartPolicy: Never
       volumes:
         - name: workspace-volume
-          persistentVolumeClaim:
-            claimName: jenkins
+          emptyDir: {}
