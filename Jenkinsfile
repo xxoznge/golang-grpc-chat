@@ -1,16 +1,9 @@
 pipeline {
   agent any
-
   stages {
-    stage('Checkout') {
+    stage('Validate') {
       steps {
-        checkout scm
-      }
-    }
-
-    stage('Ping') {
-      steps {
-        echo '✅ Jenkinsfile 적용됨!'
+        sh 'echo "🔥 실행됨! workspace에 있는 파일은?" && ls -al'
       }
     }
   }
