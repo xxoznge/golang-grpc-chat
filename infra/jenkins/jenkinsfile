@@ -9,13 +9,22 @@ pipeline {
         sh "ls -l ${WORKSPACE}/infra/kaniko/"
       }
     }
-    stage('Debug') {
+    stage('Kaniko Build & Push') {
       steps {
         script {
-          echo "빌드할 job 리스트:"
-          def jobs = ['server', 'web', 'ws']
-          for (job in jobs) {
-            echo "Job: ${job}"
+          def kanikoJobs = ['server', 'web', 'ws']
+
+          for (job in kanikoJobs) {
+            echo "Deploy kaniko job: ${job}"
+
+            sh """
+              kubectl delete job kaniko-job-${job} --ignore-not-found -n jenkins
+              kubectl apply -f ${WORKSPACE}/infra/kaniko/kaniko-job-${job}.yaml -n jenkins
+              kubectl wait --for=condition=complete --timeout=300s job/kaniko-job-${job} -n jenkins || (
+                echo '[오류] kaniko-job-${job} 실패. 로그 출력:' && \
+                kubectl logs job/kaniko-job-${job} -n jenkins && exit 1
+              )
+            """
           }
         }
       }
