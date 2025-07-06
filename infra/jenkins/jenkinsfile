@@ -1,48 +1,21 @@
 pipeline {
   agent any
 
-  environment {
-    AWS_ACCESS_KEY_ID     = credentials('aws-access-key-id')
-    AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
-    AWS_SESSION_TOKEN     = credentials('aws-session-token')
-    AWS_ACCOUNT_ID        = '935875533840'
-    AWS_REGION            = 'ap-northeast-2'
-    IMAGE_NAME            = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/golang-grpc-chat"
-  }
-
   stages {
     stage('Checkout') {
       steps {
-        echo "GitHub에서 소스코드 체크아웃"
+        echo "Workspace: ${env.WORKSPACE}"
         checkout scm
+        sh 'ls -l ${WORKSPACE}/infra/kaniko/'
       }
     }
-
-    stage('Kaniko Build & Push') {
+    stage('Debug') {
       steps {
         script {
-          // Jenkins 워크스페이스 경로를 환경변수로 받음
-          def workspace = env.WORKSPACE
-
-          def kanikoJobs = [
-            [name: 'server', dockerfile: "${workspace}/golang-grpc-chat/Dockerfile", context: "dir://${workspace}"],
-            [name: 'web', dockerfile: "${workspace}/web-chat/Dockerfile", context: "dir://${workspace}"],
-            [name: 'ws', dockerfile: "${workspace}/ws-proxy/Dockerfile", context: "dir://${workspace}"]
-          ]
-
-          for (job in kanikoJobs) {
-            echo "Kaniko로 ${job.name} 이미지 빌드 및 ECR에 푸시"
-
-            sh """
-              kubectl delete job kaniko-job-${job.name} --ignore-not-found
-              # YAML 파일에서 Kaniko 컨테이너가 workspace 볼륨 마운트하도록 수정 필요
-              kubectl apply -f infra/kaniko/kaniko-job-${job.name}.yaml
-              kubectl wait --for=condition=complete --timeout=300s job/kaniko-job-${job.name} || (
-                echo '[오류] kaniko-job-${job.name} 실패. 로그 출력:' && \
-                kubectl logs job/kaniko-job-${job.name} && \
-                exit 1
-              )
-            """
+          echo "빌드할 job 리스트:"
+          def jobs = ['server', 'web', 'ws']
+          for (job in jobs) {
+            echo "Job: ${job}"
           }
         }
       }
