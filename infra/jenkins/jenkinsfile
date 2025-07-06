@@ -36,7 +36,7 @@ pipeline {
             sh """
               kubectl delete job kaniko-job-${job.name} --ignore-not-found
               # YAML 파일에서 Kaniko 컨테이너가 workspace 볼륨 마운트하도록 수정 필요
-              kubectl apply -f Infra/kaniko/kaniko-job-${job.name}.yaml
+              kubectl apply -f infra/kaniko/kaniko-job-${job.name}.yaml
               kubectl wait --for=condition=complete --timeout=300s job/kaniko-job-${job.name} || (
                 echo '[오류] kaniko-job-${job.name} 실패. 로그 출력:' && \
                 kubectl logs job/kaniko-job-${job.name} && \
