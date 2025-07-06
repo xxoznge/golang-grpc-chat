@@ -12,7 +12,7 @@ spec:
       - name: kaniko
         image: gcr.io/kaniko-project/executor:latest
         args:
-          - --dockerfile=/workspace/web-chat/Dockerfile
+          - --dockerfile=/web-chat/Dockerfile
           - --context=dir:///workspace
           - --destination=935875533840.dkr.ecr.ap-northeast-2.amazonaws.com/web-chat:latest
           - --cache=true
