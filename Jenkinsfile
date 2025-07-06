@@ -1,9 +1,10 @@
 pipeline {
   agent any
   stages {
-    stage('Validate') {
+    stage('Ping') {
       steps {
-        sh 'echo "🔥 실행됨! workspace에 있는 파일은?" && ls -al'
+        echo "✅ Jenkins pipeline 실행됨! 현재 작업 디렉토리 목록:"
+        sh 'ls -al'
       }
     }
   }
