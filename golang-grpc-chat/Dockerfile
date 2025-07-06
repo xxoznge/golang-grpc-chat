@@ -1,3 +1,5 @@
+# golang-grpc-chat
+
 # 빌드 단계
 FROM golang:1.20-alpine AS builder
 WORKDIR /app

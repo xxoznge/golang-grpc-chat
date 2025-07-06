@@ -1,4 +1,4 @@
-# Infra/argocd/ingress.yaml
+# infra/argocd/ingress.yaml
 
 apiVersion: networking.k8s.io/v1
 kind: Ingress
