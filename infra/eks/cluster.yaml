@@ -1,0 +1,37 @@
+# infra/eks/cluster.yaml
+
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: grpc-chat-cluster-v1-1
+  region: ap-northeast-2
+
+# kube-system 등 EC2에서 운영
+nodeGroups:
+  - name: system-nodes
+    instanceType: t3.small
+    desiredCapacity: 1
+    minSize: 1
+    maxSize: 1
+    labels:
+      role: system
+    tags:
+      nodegroup-role: system
+
+# jenkins를 위한 전용 노드그룹
+  - name: jenkins-nodes
+    instanceType: t3.medium
+    desiredCapacity: 1
+    minSize: 1
+    maxSize: 1
+    labels:
+      role: jenkins
+    tags:
+      nodegroup-role: jenkins
+
+fargateProfiles:
+  - name: app-fargate
+    selectors:
+      - namespace: grpc-chat
+      - namespace: argocd
