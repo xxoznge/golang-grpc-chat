@@ -1,35 +1,38 @@
+# infra/jenkins/values.yaml
+
 controller:
-  admin:
-    existingSecret: jenkins
+  nodeSelector:
+    role: jenkins
+  tolerations:
+    - key: "jenkins"
+      operator: "Exists"
+      effect: "NoSchedule"
+
   persistence:
     enabled: true
+    existingClaim: ""
+    storageClass: "gp2"
     size: 20Gi
-    storageClass: gp2
+    mountPath: /var/jenkins_home
+
   serviceType: LoadBalancer
   serviceAnnotations:
     service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
     service.beta.kubernetes.io/aws-load-balancer-type: external
-  serviceAccount:
-    create: true
-    name: jenkins
-  ingress:
-    enabled: false
+
   resources:
     requests:
       cpu: "500m"
-      memory: "1Gi"
+      memory: "1.5Gi"  
     limits:
       cpu: "2"
-      memory: "4Gi"
-  nodeSelector:
-    role: jenkins
-  agent:
-    customJenkinsLabels: jenkins-agent
-    image: 935875533840.dkr.ecr.ap-northeast-2.amazonaws.com/jenkins-agent-with-kubectl
-    tag: latest
-    alwaysPullImage: true
+      memory: "2Gi"   
 
-persistence:
-  enabled: true
-  storageClass: gp2
-  size: 20Gi
+  ingress:
+    enabled: false
+    
+  installPlugins: []          # 플러그인 자동 설치 비활성화
+  initContainers: []          # init 컨테이너 없애기
+  sidecars:
+    configReload:
+      enabled: false          # config reload 사이드카 비활성화

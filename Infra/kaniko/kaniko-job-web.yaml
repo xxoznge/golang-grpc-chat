@@ -1,29 +1,42 @@
+# infra/kaniko/kaniko-job-web.yaml
+ 
 apiVersion: batch/v1
 kind: Job
 metadata:
   name: kaniko-job-web
-  namespace: default
+  namespace: jenkins
 spec:
-  backoffLimit: 0
   template:
     spec:
-      serviceAccountName: ecr-push-sa
-      restartPolicy: Never
       containers:
-        - name: kaniko
-          image: gcr.io/kaniko-project/executor:latest
-          args:
-            - --dockerfile=web-chat/Dockerfile
-            - --context=git://github.com/xxoznge/golang-grpc-chat.git#main
-            - --destination=935875533840.dkr.ecr.ap-northeast-2.amazonaws.com/web-chat:latest
-            - --destination=935875533840.dkr.ecr.ap-northeast-2.amazonaws.com/web-chat:${BUILD_NUMBER}
-            - --skip-tls-verify
-            - --snapshotMode=redo
-            - --cache=true
-          volumeMounts:
-            - name: kaniko-secret
-              mountPath: /kaniko/.docker
+      - name: kaniko
+        image: gcr.io/kaniko-project/executor:latest
+        args:
+          - --dockerfile=/workspace/web-chat/Dockerfile
+          - --context=dir:///workspace
+          - --destination=935875533840.dkr.ecr.ap-northeast-2.amazonaws.com/web-chat:latest
+          - --cache=true
+        volumeMounts:
+          - name: workspace-volume
+            mountPath: /workspace
+        env:
+          - name: AWS_ACCESS_KEY_ID
+            valueFrom:
+              secretKeyRef:
+                name: aws-credentials
+                key: aws_access_key_id
+          - name: AWS_SECRET_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                name: aws-credentials
+                key: aws_secret_access_key
+          - name: AWS_SESSION_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: aws-credentials
+                key: aws_session_token
+      restartPolicy: Never
       volumes:
-        - name: kaniko-secret
-          secret:
-            secretName: ecr-docker-config
+        - name: workspace-volume
+          persistentVolumeClaim:
+            claimName: jenkins
