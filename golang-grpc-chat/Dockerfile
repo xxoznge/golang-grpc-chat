@@ -7,7 +7,7 @@ RUN go mod download
 
 COPY . .
 
-RUN go build -o grpc-chat-server ./cmd/server/main.go
+RUN go build -x -v -o grpc-chat-server ./cmd/server/main.go
 
 FROM alpine:latest
 WORKDIR /app

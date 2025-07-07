@@ -8,6 +8,8 @@ metadata:
 spec:
   template:
     spec:
+      imagePullSecrets:
+        - name: regcred
       initContainers:
         - name: git-clone
           image: alpine/git
