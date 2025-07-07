@@ -10,10 +10,10 @@ controller:
 
   persistence:
     enabled: true
-    existingClaim: ""
+    existingClaim: jenkins
     storageClass: "gp2"
     size: 20Gi
-    mountPath: /var/jenkins_home
+    mountPath: /bitnami/jenkins
 
   serviceType: LoadBalancer
   serviceAnnotations:
@@ -36,3 +36,22 @@ controller:
   sidecars:
     configReload:
       enabled: false          # config reload 사이드카 비활성화
+  
+  JCasC:
+    enabled: true
+    configScripts:
+      agent-config: |
+        jenkins:
+          clouds:
+            - kubernetes:
+                name: "kubernetes"
+                namespace: "jenkins"
+                containerTemplates:
+                  - name: jenkins-agent-kubectl
+                    image: 935875533840.dkr.ecr.ap-northeast-2.amazonaws.com/jenkins-agent-kubectl
+                    command: ["cat"]
+                    ttyEnabled: true
+                    resourceRequestCpu: "200m"
+                    resourceRequestMemory: "512Mi"
+                    resourceLimitCpu: "1"
+                    resourceLimitMemory: "1Gi"
