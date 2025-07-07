@@ -1,6 +1,6 @@
 module ws-proxy
 
-go 1.24.4
+go 1.24
 
 require (
 	example.com/golang-grpc-chat v0.0.0-00010101000000-000000000000
