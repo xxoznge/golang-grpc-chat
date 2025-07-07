@@ -1,6 +1,7 @@
-// Jenkinsfile (이미 잘 구성되어 있음)
+// Jenkinsfile
 podTemplate(
   label: 'kaniko-pod',
+  serviceAccount: 'jenkins',
   containers: [
     containerTemplate(
       name: 'kubectl',
