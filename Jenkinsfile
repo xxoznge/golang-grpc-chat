@@ -3,7 +3,7 @@ podTemplate(
   containers: [
     containerTemplate(
       name: 'kubectl',
-      image: 'lachlanevenson/k8s-kubectl:v1.27.1', // ✅ 변경
+      image: 'lachlanevenson/k8s-kubectl:latest', 
       command: 'cat',
       ttyEnabled: true
     )
