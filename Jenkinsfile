@@ -33,7 +33,7 @@ podTemplate(
             sh """
               kubectl delete job kaniko-job-${job} --ignore-not-found -n jenkins
               kubectl apply -f infra/kaniko/kaniko-job-${job}.yaml -n jenkins
-              kubectl wait --for=condition=complete --timeout=600s job/kaniko-job-${job} -n jenkins || (
+              kubectl wait --for=condition=complete --timeout=300s job/kaniko-job-${job} -n jenkins || (
                 echo '[실패] ${job} 실패! 로그 출력' && \
                 kubectl logs job/kaniko-job-${job} -n jenkins && exit 1
               )
