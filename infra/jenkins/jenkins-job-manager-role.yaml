@@ -1,0 +1,10 @@
+# infra/jenkins/jenkins-job-manager-role.yaml
+
+kind: Role
+metadata:
+  name: jenkins-kaniko-job-role  
+  namespace: jenkins
+rules:
+  - apiGroups: ["batch"]
+    resources: ["jobs"]
+    verbs: ["get", "watch", "list", "create", "delete"]

@@ -1,9 +1,10 @@
+// Jenkinsfile (이미 잘 구성되어 있음)
 podTemplate(
   label: 'kaniko-pod',
   containers: [
     containerTemplate(
       name: 'kubectl',
-      image: 'lachlanevenson/k8s-kubectl:latest', 
+      image: 'lachlanevenson/k8s-kubectl:latest',
       command: 'cat',
       ttyEnabled: true
     )

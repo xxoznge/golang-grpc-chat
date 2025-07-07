@@ -1,0 +1,15 @@
+# infra/jenkins/jenkins-job-manager-rolebinding.yaml
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: jenkins-kaniko-job-binding
+  namespace: jenkins
+subjects:
+  - kind: ServiceAccount
+    name: jenkins              
+    namespace: jenkins
+roleRef:
+  kind: Role
+  name: jenkins-kaniko-job-role
+  apiGroup: rbac.authorization.k8s.io
