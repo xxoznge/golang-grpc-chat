@@ -3,7 +3,7 @@ podTemplate(
   containers: [
     containerTemplate(
       name: 'kubectl',
-      image: 'bitnami/kubectl:latest',
+      image: 'lachlanevenson/k8s-kubectl:v1.27.1', // ✅ 변경
       command: 'cat',
       ttyEnabled: true
     )
@@ -28,7 +28,6 @@ podTemplate(
           def kanikoJobs = ['server', 'web', 'ws']
           for (job in kanikoJobs) {
             echo "${job} 빌드 시작"
-
             sh """
               kubectl delete job kaniko-job-${job} --ignore-not-found -n jenkins
               kubectl apply -f infra/kaniko/kaniko-job-${job}.yaml -n jenkins
