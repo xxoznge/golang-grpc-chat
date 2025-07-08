@@ -1,0 +1,15 @@
+# infra/menifests/web/service.yaml
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: grpc-web
+  namespace: grpc-chat
+spec:
+  selector:
+    app: grpc-web
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+  type: ClusterIP

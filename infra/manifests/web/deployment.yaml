@@ -1,0 +1,24 @@
+# infra/menifests/web/deployment.yaml
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grpc-web
+  namespace: grpc-chat
+  labels:
+    app: grpc-web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grpc-web
+  template:
+    metadata:
+      labels:
+        app: grpc-web
+    spec:
+      containers:
+        - name: grpc-web
+          image: 935875533840.dkr.ecr.ap-northeast-2.amazonaws.com/web-chat:latest
+          ports:
+            - containerPort: 80
