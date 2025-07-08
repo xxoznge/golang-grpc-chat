@@ -10,7 +10,7 @@ spec:
   source:
     repoURL: https://github.com/xxoznge/golang-grpc-chat.git
     targetRevision: HEAD
-    path: infra/manifests/ws
+    path: golang-grpc-chat/infra/manifests/ws
   destination:
     server: https://kubernetes.default.svc
     namespace: grpc-chat
