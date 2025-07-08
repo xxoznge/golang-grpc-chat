@@ -2,16 +2,11 @@ FROM golang:1.24.3-alpine AS builder
 
 WORKDIR /app
 
-# go.mod와 go.sum을 복사
-COPY go.mod ./
-COPY go.sum ./
-RUN go mod download
+COPY ../golang-grpc-chat ./golang-grpc-chat
+COPY ./ws-proxy ./ws-proxy
 
-# 전체 소스 복사
-COPY . .
-
-# ws-proxy 디렉토리로 이동해서 빌드
 WORKDIR /app/ws-proxy
+RUN go mod tidy
 RUN go build -o ws-proxy main.go
 
 FROM alpine:latest
