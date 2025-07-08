@@ -9,7 +9,7 @@ spec:
   template:
     spec:
       imagePullSecrets:
-        - name: regcred
+        - name: dockerhub-auth
       initContainers:
         - name: git-clone
           image: alpine/git
