@@ -19,6 +19,6 @@ spec:
     spec:
       containers:
         - name: grpc-server
-          image: 935875533840.dkr.ecr.ap-northeast-2.amazonaws.com/grpc-server:latest
+          image: 935875533840.dkr.ecr.ap-northeast-2.amazonaws.com/golang-grpc-chat:latest
           ports:
             - containerPort: 50051
