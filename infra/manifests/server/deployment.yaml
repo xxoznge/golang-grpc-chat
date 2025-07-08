@@ -1,4 +1,4 @@
-# infra/menifests/server/deployment.yaml
+# infra/manifests/server/deployment.yaml
 
 apiVersion: apps/v1
 kind: Deployment
