@@ -106,7 +106,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 		grpcConn.Close()
 	}()
 
-	// ✅ gRPC 수신 → WebSocket 브로드캐스트 (중복 방지 추가)
+	// gRPC 수신 → WebSocket 브로드캐스트 (중복 방지 추가)
 	go func() {
 		for {
 			msg, err := stream.Recv()
