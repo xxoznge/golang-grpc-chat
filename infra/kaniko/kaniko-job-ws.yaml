@@ -29,8 +29,8 @@ spec:
         - name: kaniko
           image: gcr.io/kaniko-project/executor:latest
           args:
-            - --context=dir:///workspace/ws-proxy
-            - --dockerfile=Dockerfile
+            - --context=dir:///workspace 
+            - --dockerfile=ws-proxy/Dockerfile 
             - --destination=935875533840.dkr.ecr.ap-northeast-2.amazonaws.com/ws-proxy:latest
             - --cache=true
           volumeMounts:
