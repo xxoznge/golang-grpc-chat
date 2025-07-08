@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"sync"
 
-	"example.com/golang-grpc-chat/grpcapi"
+	"github.com/xxoznge/golang-grpc-chat/grpcapi"
 
 	"github.com/gorilla/websocket"
 	"google.golang.org/grpc"
@@ -19,10 +19,10 @@ var upgrader = websocket.Upgrader{
 }
 
 var (
-	clients      = make(map[string]*websocket.Conn) // 닉네임 → 연결
+	clients      = make(map[string]*websocket.Conn)
 	clientsMu    sync.Mutex
-	seenMessages = make(map[string]bool) // ✅ 중복 메시지 추적
-	seenMu       sync.Mutex              // ✅ 동시 접근 방지
+	seenMessages = make(map[string]bool)
+	seenMu       sync.Mutex
 )
 
 func main() {

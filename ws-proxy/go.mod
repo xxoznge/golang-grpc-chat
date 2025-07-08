@@ -1,10 +1,10 @@
 module ws-proxy
 
-go 1.23.0
+go 1.24.3
 
 require (
-	example.com/golang-grpc-chat v0.0.0-00010101000000-000000000000
 	github.com/gorilla/websocket v1.5.3
+	github.com/xxoznge/golang-grpc-chat/grpcapi v0.0.0-00010101000000-000000000000
 	google.golang.org/grpc v1.73.0
 )
 
@@ -15,3 +15,5 @@ require (
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20250603155806-513f23925822 // indirect
 	google.golang.org/protobuf v1.36.6 // indirect
 )
+
+replace github.com/xxoznge/golang-grpc-chat/grpcapi => ../golang-grpc-chat/grpcapi
