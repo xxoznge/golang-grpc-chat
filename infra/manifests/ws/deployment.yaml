@@ -1,0 +1,24 @@
+# infra/menifests/ws/deployment.yaml
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grpc-ws
+  namespace: grpc-chat
+  labels:
+    app: grpc-ws
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grpc-ws
+  template:
+    metadata:
+      labels:
+        app: grpc-ws
+    spec:
+      containers:
+        - name: grpc-ws
+          image: 935875533840.dkr.ecr.ap-northeast-2.amazonaws.com/ws-proxy:latest
+          ports:
+            - containerPort: 8080
