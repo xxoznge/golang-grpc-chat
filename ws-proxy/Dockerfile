@@ -7,7 +7,7 @@ COPY ./ws-proxy ./ws-proxy
 
 WORKDIR /app/ws-proxy
 RUN go mod tidy
-RUN go build -o ws-proxy main.go
+RUN go build -o /app/ws-proxy/ws-proxy main.go
 
 FROM alpine:latest
 WORKDIR /app
