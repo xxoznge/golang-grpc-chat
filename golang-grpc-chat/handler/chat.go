@@ -5,7 +5,7 @@ import (
 	"sync"
 	"time"
 
-	"golang-grpc-chat/grpcapi"
+	"github.com/xxoznge/golang-grpc-chat/grpcapi"
 )
 
 type ChatHandler struct {

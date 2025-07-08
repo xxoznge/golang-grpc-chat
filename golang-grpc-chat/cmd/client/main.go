@@ -9,7 +9,7 @@ import (
 	"os"
 	"time"
 
-	"golang-grpc-chat/grpcapi"
+	"github.com/xxoznge/golang-grpc-chat/golang-grpc-chat/grpcapi"
 
 	"google.golang.org/grpc"
 )

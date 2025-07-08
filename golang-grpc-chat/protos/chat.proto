@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package grpcapi;
 
-option go_package = "golang-grpc-chat/grpcapi";
+option go_package = "github.com/xxoznge/golang-grpc-chat/grpcapi";
 
 service ChatService {
   rpc Chat(stream ChatMessage) returns (stream ChatMessage);

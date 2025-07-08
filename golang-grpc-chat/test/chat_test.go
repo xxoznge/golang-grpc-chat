@@ -7,8 +7,8 @@ import (
 	"testing"
 	"time"
 
-	"golang-grpc-chat/grpcapi"
-	"golang-grpc-chat/handler"
+	"github.com/xxoznge/golang-grpc-chat/grpcapi"
+	"github.com/xxoznge/golang-grpc-chat/handler"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/test/bufconn"
