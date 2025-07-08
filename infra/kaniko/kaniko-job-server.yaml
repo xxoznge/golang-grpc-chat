@@ -36,6 +36,8 @@ spec:
           volumeMounts:
             - name: workspace-volume
               mountPath: /workspace
+            - name: docker-config 
+              mountPath: /kaniko/.docker 
           env:
             - name: AWS_ACCESS_KEY_ID
               valueFrom:
@@ -56,3 +58,6 @@ spec:
       volumes:
         - name: workspace-volume
           emptyDir: {}
+        - name: docker-config 
+          secret:
+            secretName: kaniko-docker-config
