@@ -1,9 +1,7 @@
 FROM golang:1.24.3-alpine AS builder
 
 WORKDIR /app
-
-COPY ../golang-grpc-chat ./golang-grpc-chat
-COPY ./ws-proxy ./ws-proxy
+COPY . .           
 
 WORKDIR /app/ws-proxy
 RUN go mod tidy
