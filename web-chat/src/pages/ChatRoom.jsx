@@ -62,7 +62,10 @@ function ChatRoom({ nickname, room, onLeave }) {
   };
 
   const handleKeyPress = (e) => {
-    if (e.key === "Enter") sendMessage();
+    if (e.key === "Enter") {
+      e.preventDefault();
+      sendMessage();
+    }
   };
 
   const handleLeave = () => {
