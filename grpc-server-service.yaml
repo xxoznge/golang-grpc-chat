@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: grpc-server
+  namespace: grpc-chat
+  annotations:
+    argocd.argoproj.io/tracking-id: grpc-server:/Service:grpc-chat/grpc-server
+spec:
+  type: LoadBalancer
+  selector:
+    app: grpc-server
+  ports:
+    - name: grpc
+      port: 50051
+      targetPort: 50051
+      protocol: TCP
+    - name: metrics
+      port: 2112
+      targetPort: 2112
+      protocol: TCP
